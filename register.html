@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tham gia MinimixPaint</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page">
+
+    <div class="auth-card">
+        <div style="font-size: 50px; margin-bottom: 10px;">✨</div>
+        <h2>Tạo tài khoản</h2>
+        <p class="subtitle">Chỉ mất 30 giây để trở thành một họa sĩ Pro.</p>
+
+        <div class="input-group">
+            <label>Tên đăng nhập mới</label>
+            <input type="text" id="reg-u" placeholder="Ví dụ: dat_artist">
+        </div>
+
+        <div class="input-group">
+            <label>Mật khẩu</label>
+            <input type="password" id="reg-p" placeholder="Tối thiểu 6 ký tự">
+        </div>
+
+        <div class="input-group">
+            <label>Xác nhận mật khẩu</label>
+            <input type="password" id="reg-p2" placeholder="Nhập lại mật khẩu">
+        </div>
+
+        <button class="btn-pro" onclick="handleRegister()">Đăng ký tài khoản</button>
+
+        <div class="auth-footer">
+            Đã có tài khoản? <a href="login.html">Đăng nhập tại đây</a>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        function handleRegister() {
+            const u = document.getElementById('reg-u').value.trim();
+            const p = document.getElementById('reg-p').value;
+            const p2 = document.getElementById('reg-p2').value;
+
+            if(!u || !p || !p2) return alert("Vui lòng điền đủ thông tin!");
+            if(p !== p2) return alert("Mật khẩu xác nhận không khớp!");
+
+            Auth.register(u, p);
+        }
+    </script>
+</body>
+</html>

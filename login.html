@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập | MinimixPaint</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page">
+
+    <div class="auth-card">
+        <div style="font-size: 50px; margin-bottom: 10px;">🎨</div>
+        <h2>Chào bạn mới!</h2>
+        <p class="subtitle">Đăng nhập để bắt đầu thế giới sáng tạo của riêng bạn.</p>
+
+        <div class="input-group">
+            <label>Tên đăng nhập</label>
+            <input type="text" id="login-u" placeholder="Nhập tên của bạn...">
+        </div>
+
+        <div class="input-group">
+            <label>Mật khẩu</label>
+            <input type="password" id="login-p" placeholder="••••••••">
+        </div>
+
+        <button class="btn-pro" onclick="handleLogin()">Vào bảng vẽ ngay</button>
+
+        <div class="auth-footer">
+            Chưa có tài khoản? <a href="register.html">Đăng ký thành viên</a>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        function handleLogin() {
+            const u = document.getElementById('login-u').value.trim();
+            const p = document.getElementById('login-p').value;
+            if(!u || !p) return alert("Vui lòng điền đủ thông tin!");
+            Auth.login(u, p);
+        }
+    </script>
+</body>
+</html>

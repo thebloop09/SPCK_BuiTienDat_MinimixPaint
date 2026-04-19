@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+:root {
+    --primary: #7d2ae8;
+    --primary-dark: #6610f2;
+    --dark: #18191b;
+    --light-bg: #f4f5f7;
+    --canvas-shadow: 0 20px 50px rgba(0,0,0,0.15);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+body { background: var(--light-bg); color: #1e1e1e; height: 100vh; }
+
+/* --- HOME PAGE (index.html) --- */
+.hero-container {
+    height: 100vh; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center;
+    background: radial-gradient(circle at top right, #f8f0ff, #ffffff);
+}
+
+.hero-title { font-size: 70px; font-weight: 800; letter-spacing: -2px; line-height: 1.1; margin-bottom: 20px; }
+.hero-title span { color: var(--primary); }
+.hero-subtitle { font-size: 18px; color: #636e72; max-width: 600px; margin-bottom: 40px; line-height: 1.6; }
+
+/* Nhóm nút bấm trang chủ */
+#cta-group { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.auth-info { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+/* --- NÚT BẤM CHUNG --- */
+.btn { 
+    padding: 14px 28px; border-radius: 12px; border: none; font-weight: 700; 
+    cursor: pointer; transition: 0.3s; text-decoration: none; display: inline-flex; 
+    align-items: center; gap: 8px; font-size: 15px;
+}
+.btn-primary { background: var(--primary); color: white; box-shadow: 0 8px 20px rgba(125,42,232,0.3); }
+.btn-primary:hover { transform: translateY(-3px); background: var(--primary-dark); }
+.btn-outline { background: white; color: #1e1e1e; border: 1px solid #ddd; }
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+/* --- STUDIO (paint.html) --- */
+.topbar { 
+    height: 64px; background: white; border-bottom: 1px solid #ddd; 
+    display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+}
+
+.studio-main { display: flex; height: calc(100vh - 64px); }
+
+/* Thanh công cụ dọc bên trái */
+.sidebar { width: 80px; background: var(--dark); display: flex; flex-direction: column; padding-top: 10px; }
+.tool-btn { 
+    width: 100%; height: 75px; background: transparent; border: none; 
+    color: #a9abb0; cursor: pointer; display: flex; flex-direction: column; 
+    align-items: center; justify-content: center; gap: 6px; font-size: 11px; transition: 0.2s;
+}
+.tool-btn i { font-size: 20px; }
+.tool-btn.active { color: white; background: rgba(255,255,255,0.1); border-left: 4px solid var(--primary); }
+.tool-btn:hover { color: white; }
+
+/* Vùng vẽ chính giữa */
+.workspace { 
+    flex: 1; display: flex; align-items: center; justify-content: center; 
+    background: #e2e4e9; overflow: auto; padding: 40px;
+}
+.canvas-wrap { 
+    background: white; border-radius: 4px; box-shadow: var(--canvas-shadow); line-height: 0;
+}
+canvas { cursor: crosshair; }
+
+/* Điều khiển thông số trên Topbar */
+.tool-settings { 
+    display: flex; gap: 20px; align-items: center; background: #f1f2f6; 
+    padding: 8px 20px; border-radius: 50px; 
+}
+input[type="color"] { border: none; width: 30px; height: 30px; background: none; cursor: pointer; }
+input[type="range"] { accent-color: var(--primary); cursor: pointer; }
+
+/* Import font chữ hiện đại */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+:root {
+    --primary: #7d2ae8;
+    --primary-hover: #6610f2;
+    --bg-gradient: radial-gradient(circle at top right, #f8f0ff, #ffffff);
+    --white: #ffffff;
+    --text-dark: #1e1e1e;
+    --text-gray: #636e72;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+/* 1. GIAO DIỆN CHUNG CHO TRANG ĐĂNG NHẬP & ĐĂNG KÝ */
+.auth-page {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-gradient);
+    padding: 20px;
+}
+
+.auth-card {
+    background: var(--white);
+    padding: 45px 40px;
+    border-radius: 32px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+.auth-card h2 {
+    font-size: 30px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: var(--text-dark);
+}
+
+.auth-card p.subtitle {
+    font-size: 14px;
+    color: var(--text-gray);
+    margin-bottom: 30px;
+}
+
+/* Group nhập liệu */
+.input-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    color: #555;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px 18px;
+    border: 2px solid #f1f1f1;
+    border-radius: 16px;
+    background: #fafafa;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(125, 42, 232, 0.1);
+}
+
+/* Nút bấm nổi Pro */
+.btn-pro {
+    width: 100%;
+    padding: 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(125, 42, 232, 0.3);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-pro:hover {
+    background: var(--primary-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(125, 42, 232, 0.4);
+}
+
+/* Liên kết ở chân trang */
+.auth-footer {
+    margin-top: 25px;
+    font-size: 14px;
+    color: var(--text-gray);
+}
+
+.auth-footer a {
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-footer a:hover { text-decoration: underline; }
