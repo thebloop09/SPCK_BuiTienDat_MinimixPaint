@@ -1,28 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Đăng nhập | MinimixPaint</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8"><title>Đăng nhập | MinimixPaint</title><link rel="stylesheet" href="style.css">
 </head>
-<body class="full-page">
-    <div class="auth-card">
-        <div style="font-size: 50px; margin-bottom: 10px;">🎨</div>
-        <h2>Chào mừng trở lại!</h2>
-        <p class="subtitle">Đăng nhập để bắt đầu thế giới sáng tạo.</p>
-        <input type="text" id="login-u" placeholder="Tên đăng nhập">
-        <input type="password" id="login-p" placeholder="Mật khẩu">
-        <button class="btn-pro btn-primary" style="width: 100%;" onclick="handleLogin()">Vào hệ thống</button>
-        <p style="margin-top: 25px; font-size: 14px;">Chưa có tài khoản? <a href="register.html" style="color:var(--primary); font-weight:700; text-decoration:none;">Đăng ký</a></p>
-    </div>
-    <script src="app.js"></script>
-    <script>
-        function handleLogin() {
-            const u = document.getElementById('login-u').value.trim();
-            const p = document.getElementById('login-p').value;
-            if(!u || !p) return alert("Vui lòng điền đủ thông tin!");
-            Auth.login(u, p);
-        }
-    </script>
-</body>
+<body class="auth-page"><div class="auth-card">
+    <div style="font-size: 50px; margin-bottom: 10px;">🎨</div>
+    <h2>Chào mừng trở lại</h2>
+    <div class="input-group"><label>Tên đăng nhập</label><input type="text" id="u"></div>
+    <div class="input-group"><label>Mật khẩu</label><input type="password" id="p"></div>
+    <button class="btn-pro btn-primary" style="width:100%" onclick="Auth.login(document.getElementById('u').value, document.getElementById('p').value)">Đăng nhập</button>
+    <p style="margin-top:20px">Chưa có tài khoản? <a href="register.html" style="color:var(--primary)">Đăng ký ngay</a></p>
+</div><script src="app.js"></script></body>
 </html>

@@ -1,38 +1,15 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Tham gia MinimixPaint</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8"><title>Tham gia MinimixPaint</title><link rel="stylesheet" href="style.css">
 </head>
-<body class="auth-page">
-    <div class="auth-card">
-        <div style="font-size: 50px; margin-bottom: 10px;">✨</div>
-        <h2>Tạo tài khoản</h2>
-        <p class="subtitle">Chỉ mất 30 giây để trở thành một họa sĩ Pro.</p>
-
-        <div class="input-group">
-            <label>Tên đăng nhập mới</label>
-            <input type="text" id="reg-u" placeholder="Ví dụ: dat_artist">
-        </div>
-
-        <div class="input-group">
-            <label>Mật khẩu</label>
-            <input type="password" id="reg-p" placeholder="Tối thiểu 6 ký tự">
-        </div>
-
-        <div class="input-group">
-            <label>Xác nhận mật khẩu</label>
-            <input type="password" id="reg-p2" placeholder="Nhập lại mật khẩu">
-        </div>
-
-        <!-- Chú ý class: btn-pro btn-primary -->
-        <button class="btn-pro btn-primary" onclick="handleRegister()">Đăng ký tài khoản</button>
-
-        <p style="margin-top: 20px; font-size: 14px;">
-            Đã có tài khoản? <a href="login.html" style="color:var(--primary); font-weight:700; text-decoration:none;">Đăng nhập ngay</a>
-        </p>
-    </div>
-    <script src="app.js"></script>
-</body>
+<body class="auth-page"><div class="auth-card">
+    <div style="font-size: 50px; margin-bottom: 10px;">✨</div>
+    <h2>Tạo tài khoản</h2>
+    <div class="input-group"><label>Tên đăng nhập mới</label><input type="text" id="reg-u"></div>
+    <div class="input-group"><label>Mật khẩu</label><input type="password" id="reg-p"></div>
+    <div class="input-group"><label>Xác nhận mật khẩu</label><input type="password" id="reg-p2"></div>
+    <button class="btn-pro btn-primary" style="width:100%" onclick="Auth.register(document.getElementById('reg-u').value, document.getElementById('reg-p').value)">Đăng ký thành viên</button>
+    <p style="margin-top:20px">Đã có tài khoản? <a href="login.html" style="color:var(--primary)">Đăng nhập</a></p>
+</div><script src="app.js"></script></body>
 </html>

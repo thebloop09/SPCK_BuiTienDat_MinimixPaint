@@ -2,6 +2,7 @@ const mainCanvas = document.getElementById("mainCanvas"), mainCtx = mainCanvas.g
 const tempCanvas = document.getElementById("tempCanvas"), tempCtx = tempCanvas.getContext("2d");
 const colorPicker = document.getElementById("colorPicker"), sizeSlider = document.getElementById("sizeSlider");
 const textInput = document.getElementById("textInput"), textToolbar = document.getElementById("text-toolbar");
+const opacitySlider = document.getElementById("opacitySlider");
 
 let isDrawing = false, tool = "brush", startX, startY, undoStack = [], polyPoints = [];
 
@@ -11,7 +12,10 @@ window.onload = () => {
     mainCtx.fillStyle = "white"; mainCtx.fillRect(0, 0, 900, 550);
     saveState();
     const editing = localStorage.getItem("editingArt");
-    if(editing) { const img = new Image(); img.src = editing; img.onload = () => { mainCtx.drawImage(img, 0, 0); saveState(); localStorage.removeItem("editingArt"); }; }
+    if(editing) {
+        const img = new Image(); img.src = editing;
+        img.onload = () => { mainCtx.drawImage(img, 0, 0); saveState(); localStorage.removeItem("editingArt"); };
+    }
 };
 
 sizeSlider.oninput = () => document.getElementById("sizeVal").innerText = sizeSlider.value;
@@ -26,20 +30,14 @@ const setProps = (c) => {
     c.lineWidth = sizeSlider.value; c.lineCap = "round"; c.lineJoin = "round";
     c.strokeStyle = tool === "eraser" ? "white" : colorPicker.value;
     c.fillStyle = colorPicker.value;
-    c.globalAlpha = tool === "eraser" ? 1 : document.getElementById("opacitySlider").value / 100;
+    c.globalAlpha = tool === "eraser" ? 1 : opacitySlider.value / 100;
 };
 
-// FIX TỌA ĐỘ KHI Bố CỤC LỆCH
 tempCanvas.onmousedown = (e) => {
-    isDrawing = true; startX = e.offsetX; startY = e.offsetY; 
-    setProps(mainCtx); setProps(tempCtx);
+    isDrawing = true; startX = e.offsetX; startY = e.offsetY; setProps(mainCtx); setProps(tempCtx);
     if(tool === "brush" || tool === "eraser") { mainCtx.beginPath(); mainCtx.moveTo(startX, startY); }
     else if(tool === "fill") floodFill(startX, startY, colorPicker.value);
     else if(tool === "text") showTextUI(startX, startY);
-    else if(tool === "picker") { 
-        const p = mainCtx.getImageData(startX, startY, 1, 1).data; 
-        colorPicker.value = "#" + ((1 << 24) + (p[0] << 16) + (p[1] << 8) + p[2]).toString(16).slice(1); 
-    }
 };
 
 tempCanvas.onmousemove = (e) => {
@@ -56,8 +54,14 @@ tempCanvas.onmousemove = (e) => {
         tempCtx.clearRect(0, 0, 900, 550);
         if(tool === "line") { tempCtx.beginPath(); tempCtx.moveTo(startX, startY); tempCtx.lineTo(x, y); tempCtx.stroke(); }
         else if(tool === "rect") tempCtx.strokeRect(startX, startY, x - startX, y - startY);
-        else if(tool === "circle") { let r = Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2)); tempCtx.beginPath(); tempCtx.arc(startX, startY, r, 0, Math.PI * 2); tempCtx.stroke(); }
-        else if(tool === "poly" && polyPoints.length > 0) { tempCtx.beginPath(); tempCtx.moveTo(polyPoints[0].x, polyPoints[0].y); polyPoints.forEach(p => tempCtx.lineTo(p.x, p.y)); tempCtx.lineTo(x, y); tempCtx.stroke(); }
+        else if(tool === "circle") { 
+            let r = Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2)); 
+            tempCtx.beginPath(); tempCtx.arc(startX, startY, r, 0, Math.PI * 2); tempCtx.stroke(); 
+        }
+        else if(tool === "poly" && polyPoints.length > 0) { 
+            tempCtx.beginPath(); tempCtx.moveTo(polyPoints[0].x, polyPoints[0].y); 
+            polyPoints.forEach(p => tempCtx.lineTo(p.x, p.y)); tempCtx.lineTo(x, y); tempCtx.stroke(); 
+        }
     }
 };
 
@@ -66,31 +70,49 @@ tempCanvas.onmouseup = (e) => {
     if(tool === "poly") {
         polyPoints.push({x: e.offsetX, y: e.offsetY});
         if(polyPoints.length > 2 && Math.sqrt(Math.pow(e.offsetX - polyPoints[0].x, 2) + Math.pow(e.offsetY - polyPoints[0].y, 2)) < 25) {
-            mainCtx.beginPath(); mainCtx.moveTo(polyPoints[0].x, polyPoints[0].y); polyPoints.forEach(p => mainCtx.lineTo(p.x, p.y)); mainCtx.closePath(); mainCtx.stroke();
+            mainCtx.beginPath(); mainCtx.moveTo(polyPoints[0].x, polyPoints[0].y); 
+            polyPoints.forEach(p => mainCtx.lineTo(p.x, p.y)); mainCtx.closePath(); mainCtx.stroke();
             polyPoints = []; tempCtx.clearRect(0,0,900,550); isDrawing = false; saveState();
         }
         return;
     }
     isDrawing = false;
-    if(!["brush", "eraser", "fill", "text", "picker", "spray"].includes(tool)) { mainCtx.drawImage(tempCanvas, 0, 0); tempCtx.clearRect(0, 0, 900, 550); }
+    if(!["brush", "eraser", "fill", "text", "picker", "spray"].includes(tool)) { 
+        mainCtx.drawImage(tempCanvas, 0, 0); tempCtx.clearRect(0, 0, 900, 550); 
+    }
     saveState();
 };
 
 function showTextUI(x, y) {
-    textToolbar.style.display="flex"; textToolbar.style.left=x+"px"; textToolbar.style.top=(y-70)+"px";
+    textToolbar.style.display = "flex";
+    textToolbar.style.left = Math.min(window.innerWidth - 350, x) + "px";
+    textToolbar.style.top = (y - 70) + "px";
     document.getElementById("text-color-input").value = colorPicker.value;
-    textInput.style.display="block"; textInput.style.left=x+"px"; textInput.style.top=y+"px"; textInput.focus();
+    textInput.style.display = "block"; textInput.style.left = x + "px"; textInput.style.top = y + "px";
+    const updatePreview = () => {
+        textInput.style.fontFamily = document.getElementById("font-family").value;
+        textInput.style.fontSize = document.getElementById("font-size-input").value + "px";
+        textInput.style.color = document.getElementById("text-color-input").value;
+    };
+    document.getElementById("font-family").onchange = updatePreview;
+    document.getElementById("font-size-input").oninput = updatePreview;
+    document.getElementById("text-color-input").oninput = updatePreview;
+    updatePreview(); textInput.focus();
 }
+
 function finishText() {
-    if(textInput.value.trim()!=="") {
+    if (textInput.value.trim() !== "") {
+        const x = parseInt(textInput.style.left), y = parseInt(textInput.style.top);
         const size = document.getElementById("font-size-input").value;
-        mainCtx.font = size+"px "+document.getElementById('font-family').value;
-        mainCtx.fillStyle = document.getElementById("text-color-input").value;
-        mainCtx.fillText(textInput.value, parseInt(textInput.style.left), parseInt(textInput.style.top) + size/1.2);
+        const family = document.getElementById("font-family").value;
+        const color = document.getElementById("text-color-input").value;
+        mainCtx.globalAlpha = 1.0; mainCtx.font = `${size}px ${family}`; mainCtx.fillStyle = color;
+        mainCtx.fillText(textInput.value, x, y + size/1.2);
         saveState();
     }
-    textInput.style.display="none"; textInput.value=""; textToolbar.style.display="none";
+    textInput.style.display = "none"; textInput.value = ""; textToolbar.style.display = "none";
 }
+
 function floodFill(x, y, color) {
     const img = mainCtx.getImageData(0, 0, 900, 550);
     const target = [img.data[(y*900+x)*4], img.data[(y*900+x)*4+1], img.data[(y*900+x)*4+2]];
@@ -106,6 +128,7 @@ function floodFill(x, y, color) {
     }
     mainCtx.putImageData(img, 0, 0);
 }
+
 function saveState() { undoStack.push(mainCtx.getImageData(0, 0, 900, 550)); if(undoStack.length > 40) undoStack.shift(); }
 function undo() { polyPoints=[]; tempCtx.clearRect(0,0,900,550); if(undoStack.length > 1) { undoStack.pop(); mainCtx.putImageData(undoStack[undoStack.length - 1], 0, 0); } }
 function clearCanvas() { if(confirm("Xóa sạch bảng vẽ?")) { mainCtx.globalAlpha=1; mainCtx.fillStyle="white"; mainCtx.fillRect(0,0,900,550); saveState(); } }
@@ -113,7 +136,7 @@ function downloadImage() { const a = document.createElement("a"); a.download=`Mi
 function saveToGalleryBtn() {
     let g = JSON.parse(localStorage.getItem("paintGallery")||"[]");
     g.unshift({id:Date.now(), user:localStorage.getItem("currentUser"), image:mainCanvas.toDataURL(), date:new Date().toLocaleString()});
-    localStorage.setItem("paintGallery", JSON.stringify(g.slice(0,15))); alert("Đã lưu!");
+    localStorage.setItem("paintGallery", JSON.stringify(g.slice(0,20))); alert("Đã lưu vào Gallery!");
 }
 function handleExit() { if(confirm("Lưu trước khi thoát?")) saveToGalleryBtn(); window.location.href="index.html"; }
 document.addEventListener('keydown', e => { if(e.ctrlKey && e.key === 'z') undo(); });

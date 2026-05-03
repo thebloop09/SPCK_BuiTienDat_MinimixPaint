@@ -8,15 +8,14 @@
     <header class="topbar">
         <div class="logo" onclick="location.href='index.html'">🎨 Minimix<b>Studio</b></div>
         <div class="config-panel">
-            <input type="color" id="colorPicker">
-            <input type="range" id="sizeSlider" min="1" max="100" value="5"> <span id="sizeVal">5</span>
+            <input type="color" id="colorPicker"><input type="range" id="sizeSlider" min="1" max="100" value="5"> <span id="sizeVal" style="color:#666">5</span>
             <input type="range" id="opacitySlider" min="1" max="100" value="100">
-            <button class="btn-icon-top" onclick="undo()" title="Undo"><i class="fas fa-rotate-left"></i></button>
+            <button class="btn-pro btn-outline" style="padding:8px" onclick="undo()"><i class="fas fa-rotate-left"></i></button>
         </div>
-        <div class="actions">
-            <button class="btn-pro btn-primary" style="background:#27ae60" onclick="downloadImage()"><i class="fas fa-download"></i> Tải về</button>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-pro btn-primary" style="background:var(--success)" onclick="downloadImage()">Tải về</button>
             <button class="btn-pro btn-primary" onclick="saveToGalleryBtn()">Lưu</button>
-            <button class="btn-pro btn-outline" onclick="handleExit()" style="color:red">Thoát</button>
+            <button class="btn-pro btn-outline" style="color:red" onclick="handleExit()">Thoát</button>
         </div>
     </header>
 
@@ -29,36 +28,23 @@
 
     <div class="app-body">
         <aside class="sidebar">
-            <div class="tool-section">
-                <h4>Công cụ vẽ</h4>
-                <div class="tool-grid">
-                    <button class="tool-btn active" data-tool="brush"><i class="fas fa-paint-brush"></i>Cọ vẽ</button>
-                    <button class="tool-btn" data-tool="spray"><i class="fas fa-spray-can"></i>Phun sơn</button>
-                    <button class="tool-btn" data-tool="eraser"><i class="fas fa-eraser"></i>Tẩy</button>
-                    <button class="tool-btn" data-tool="fill"><i class="fas fa-fill-drip"></i>Đổ màu</button>
-                    <button class="tool-btn" data-tool="picker"><i class="fas fa-eye-dropper"></i>Hút màu</button>
-                    <button class="tool-btn" data-tool="text"><i class="fas fa-font"></i>Chèn chữ</button>
-                </div>
+            <div class="tool-grid">
+                <button class="tool-btn active" data-tool="brush"><i class="fas fa-paint-brush"></i>Cọ vẽ</button>
+                <button class="tool-btn" data-tool="spray"><i class="fas fa-spray-can"></i>Phun sơn</button>
+                <button class="tool-btn" data-tool="eraser"><i class="fas fa-eraser"></i>Tẩy</button>
+                <button class="tool-btn" data-tool="fill"><i class="fas fa-fill-drip"></i>Đổ màu</button>
+                <button class="tool-btn" data-tool="text" style="grid-column: span 2"><i class="fas fa-font"></i>Chèn chữ Pro</button>
             </div>
-            <div class="tool-section">
-                <h4>Hình khối</h4>
-                <div class="tool-grid">
-                    <button class="tool-btn" data-tool="line"><i class="fas fa-slash"></i>Đường thẳng</button>
-                    <button class="tool-btn" data-tool="rect"><i class="far fa-square"></i>Chữ nhật</button>
-                    <button class="tool-btn" data-tool="circle"><i class="far fa-circle"></i>Hình tròn</button>
-                    <button class="tool-btn" data-tool="poly"><i class="fas fa-draw-polygon"></i>Đa giác</button>
-                </div>
+            <h4>Hình khối</h4>
+            <div class="tool-grid">
+                <button class="tool-btn" data-tool="line"><i class="fas fa-slash"></i>Đường thẳng</button>
+                <button class="tool-btn" data-tool="rect"><i class="far fa-square"></i>Chữ nhật</button>
+                <button class="tool-btn" data-tool="circle"><i class="far fa-circle"></i>Hình tròn</button>
+                <button class="tool-btn" data-tool="poly"><i class="fas fa-draw-polygon"></i>Đa giác</button>
             </div>
-            <button class="btn-pro btn-outline" onclick="clearCanvas()" style="background:#333; color:red; margin-top:auto">XÓA SẠCH BẢNG</button>
+            <button class="btn-pro" onclick="clearCanvas()" style="background:#333; color:red; margin-top:auto">XÓA SẠCH</button>
         </aside>
-
-        <main class="workspace">
-            <div class="canvas-holder">
-                <canvas id="mainCanvas"></canvas>
-                <canvas id="tempCanvas"></canvas>
-                <input type="text" id="textInput">
-            </div>
-        </main>
+        <main class="workspace"><div class="canvas-holder"><canvas id="mainCanvas"></canvas><canvas id="tempCanvas"></canvas><input type="text" id="textInput"></div></main>
     </div>
     <script src="paint.js"></script>
 </body>
