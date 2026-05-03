@@ -1,37 +1,25 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>MinimixPaint - Thiết kế mọi thứ</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8"><title>MinimixPaint - Trang chủ</title><link rel="stylesheet" href="style.css">
 </head>
 <body class="hero-container">
-    <h1 class="hero-title">Thiết kế mọi thứ với <br><span>MinimixPaint</span></h1>
-    <p class="hero-subtitle">Công cụ vẽ chuyên nghiệp, tinh gọn và mạnh mẽ ngay trên trình duyệt của bạn. Không cần cài đặt, vẽ ngay lập tức.</p>
-    
-    <div id="cta-group">
-        <!-- JS sẽ render nội dung vào đây -->
-    </div>
-
+    <h1 class="hero-title" style="font-size:80px; font-weight:800; line-height:1">Thiết kế mọi thứ với <br><span style="color:var(--primary)">MinimixPaint</span></h1>
+    <p style="margin: 20px 0 40px; color:#666; font-size:18px">Công cụ vẽ chuyên nghiệp, tinh gọn ngay trên trình duyệt của bạn.</p>
+    <div id="cta-group"></div>
     <script src="app.js"></script>
     <script>
-        // JS render lại nút để đẹp hơn
         const user = localStorage.getItem('currentUser');
         const cta = document.getElementById('cta-group');
         if(user) {
-            cta.innerHTML = `
-                <div class="auth-info">
-                    <p style="margin-bottom:15px; font-weight:600;">Chào mừng trở lại, <b>${user}</b>!</p>
-                    <a href="paint.html" class="btn btn-primary">Vào bảng vẽ</a>
-                    <a href="gallery.html" class="btn btn-outline" style="margin-left:10px;">Thư viện</a>
-                    <button onclick="Auth.logout()" class="btn btn-outline" style="margin-left:10px; color:red;">Đăng xuất</button>
-                </div>`;
+            cta.innerHTML = `<div class="auth-card">
+                <p style="margin-bottom:20px; font-weight:600">Chào mừng trở lại, ${user}!</p>
+                <a href="paint.html" class="btn-pro btn-primary">Vào bảng vẽ</a>
+                <a href="gallery.html" class="btn-pro btn-outline" style="margin-left:10px">Thư viện</a>
+                <button onclick="Auth.logout()" class="btn-pro btn-outline" style="margin-left:10px; color:red; border-color:red">Đăng xuất</button>
+            </div>`;
         } else {
-            cta.innerHTML = `
-                <div>
-                    <a href="login.html" class="btn btn-primary">Đăng nhập ngay</a>
-                    <a href="register.html" class="btn btn-outline" style="margin-left:10px;">Đăng ký thành viên</a>
-                </div>`;
+            cta.innerHTML = `<a href="login.html" class="btn-pro btn-primary">Đăng nhập ngay</a><a href="register.html" class="btn-pro btn-outline" style="margin-left:10px">Đăng ký thành viên</a>`;
         }
     </script>
 </body>

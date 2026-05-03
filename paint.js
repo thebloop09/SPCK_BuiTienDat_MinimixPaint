@@ -1,141 +1,119 @@
-const canvas = document.getElementById("mainCanvas");
-const ctx = canvas.getContext("2d", { willReadFrequently: true });
-const colorPicker = document.getElementById("color-picker");
-const sizeSlider = document.getElementById("size-slider");
-const sizeVal = document.getElementById("size-val");
-const opacitySlider = document.getElementById("opacity-slider");
-const opacityVal = document.getElementById("opacity-val");
-const coordsDisplay = document.getElementById("coords");
+const mainCanvas = document.getElementById("mainCanvas"), mainCtx = mainCanvas.getContext("2d", { willReadFrequently: true });
+const tempCanvas = document.getElementById("tempCanvas"), tempCtx = tempCanvas.getContext("2d");
+const colorPicker = document.getElementById("colorPicker"), sizeSlider = document.getElementById("sizeSlider");
+const textInput = document.getElementById("textInput"), textToolbar = document.getElementById("text-toolbar");
 
-let isDrawing = false, tool = "brush", startX, startY, snapshot, undoStack = [];
+let isDrawing = false, tool = "brush", startX, startY, undoStack = [], polyPoints = [];
 
-// KHỞI TẠO STUDIO
 window.onload = () => {
-    const user = localStorage.getItem("currentUser");
-    if(!user) window.location.href = "login.html";
-    document.getElementById("user-tag").innerText = "Họa sĩ: " + user;
-
-    canvas.width = 900; canvas.height = 550;
-    ctx.fillStyle = "white"; 
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Nạp ảnh cũ nếu có lệnh vẽ tiếp
+    if(!localStorage.getItem("currentUser")) window.location.href = "login.html";
+    mainCanvas.width = tempCanvas.width = 900; mainCanvas.height = tempCanvas.height = 550;
+    mainCtx.fillStyle = "white"; mainCtx.fillRect(0, 0, 900, 550);
+    saveState();
     const editing = localStorage.getItem("editingArt");
-    if(editing) {
-        const img = new Image(); img.src = editing;
-        img.onload = () => { ctx.drawImage(img, 0, 0); saveState(); localStorage.removeItem("editingArt"); };
-    } else saveState();
+    if(editing) { const img = new Image(); img.src = editing; img.onload = () => { mainCtx.drawImage(img, 0, 0); saveState(); localStorage.removeItem("editingArt"); }; }
 };
 
-// CẬP NHẬT THÔNG SỐ CỌ
-sizeSlider.oninput = () => sizeVal.innerText = sizeSlider.value;
-opacitySlider.oninput = () => opacityVal.innerText = opacitySlider.value + "%";
+sizeSlider.oninput = () => document.getElementById("sizeVal").innerText = sizeSlider.value;
 
-// CHỌN CÔNG CỤ
-document.querySelectorAll(".tool-btn").forEach(btn => {
-    btn.onclick = () => {
-        document.querySelector(".tool-btn.active").classList.remove("active");
-        btn.classList.add("active");
-        tool = btn.dataset.tool;
-    }
+document.querySelectorAll(".tool-btn").forEach(btn => btn.onclick = () => {
+    document.querySelector(".tool-btn.active").classList.remove("active");
+    btn.classList.add("active"); tool = btn.dataset.tool;
+    polyPoints = []; tempCtx.clearRect(0,0,900,550);
 });
 
-// LOGIC VẼ TƯƠNG TÁC
-canvas.onmousedown = (e) => {
-    isDrawing = true; 
-    startX = e.offsetX; 
-    startY = e.offsetY;
-    
-    // Thiết lập nét vẽ mượt
-    ctx.lineWidth = sizeSlider.value;
-    ctx.strokeStyle = tool === "eraser" ? "white" : colorPicker.value;
-    ctx.globalAlpha = tool === "eraser" ? 1.0 : opacitySlider.value / 100;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    
-    // Lưu màn hình hiện tại trước khi vẽ
-    snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    
-    if(tool === "brush" || tool === "eraser") {
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-    }
-    
-    if(tool === "fill") floodFill(startX, startY, colorPicker.value);
+const setProps = (c) => {
+    c.lineWidth = sizeSlider.value; c.lineCap = "round"; c.lineJoin = "round";
+    c.strokeStyle = tool === "eraser" ? "white" : colorPicker.value;
+    c.fillStyle = colorPicker.value;
+    c.globalAlpha = tool === "eraser" ? 1 : document.getElementById("opacitySlider").value / 100;
 };
 
-canvas.onmousemove = (e) => {
-    coordsDisplay.innerText = `Tọa độ: ${e.offsetX}, ${e.offsetY} px`;
-    if(!isDrawing || tool === "fill") return;
-
-    // Trả lại ảnh cũ để tạo hiệu ứng xem trước (Preview)
-    if(tool !== "brush" && tool !== "eraser") ctx.putImageData(snapshot, 0, 0);
-
-    if(tool === "brush" || tool === "eraser") { 
-        ctx.lineTo(e.offsetX, e.offsetY); 
-        ctx.stroke(); 
-    } 
-    else if(tool === "rect") {
-        ctx.strokeRect(startX, startY, e.offsetX - startX, e.offsetY - startY);
-    } 
-    else if(tool === "circle") {
-        ctx.beginPath();
-        let r = Math.sqrt(Math.pow(startX - e.offsetX, 2) + Math.pow(startY - e.offsetY, 2));
-        ctx.arc(startX, startY, r, 0, 2 * Math.PI); 
-        ctx.stroke();
-    }
-    else if(tool === "line") {
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.stroke();
+// FIX TỌA ĐỘ KHI Bố CỤC LỆCH
+tempCanvas.onmousedown = (e) => {
+    isDrawing = true; startX = e.offsetX; startY = e.offsetY; 
+    setProps(mainCtx); setProps(tempCtx);
+    if(tool === "brush" || tool === "eraser") { mainCtx.beginPath(); mainCtx.moveTo(startX, startY); }
+    else if(tool === "fill") floodFill(startX, startY, colorPicker.value);
+    else if(tool === "text") showTextUI(startX, startY);
+    else if(tool === "picker") { 
+        const p = mainCtx.getImageData(startX, startY, 1, 1).data; 
+        colorPicker.value = "#" + ((1 << 24) + (p[0] << 16) + (p[1] << 8) + p[2]).toString(16).slice(1); 
     }
 };
 
-canvas.onmouseup = () => { 
-    if(isDrawing) { 
-        isDrawing = false; 
-        saveState(); 
-    } 
+tempCanvas.onmousemove = (e) => {
+    if(!isDrawing) return;
+    const x = e.offsetX, y = e.offsetY;
+    if(tool === "brush" || tool === "eraser") { mainCtx.lineTo(x, y); mainCtx.stroke(); }
+    else if(tool === "spray") {
+        for (let i = 0; i < 20; i++) {
+            const offX = (Math.random() - 0.5) * sizeSlider.value * 2;
+            const offY = (Math.random() - 0.5) * sizeSlider.value * 2;
+            mainCtx.fillRect(startX + offX + (x-startX), startY + offY + (y-startY), 1, 1);
+        }
+    } else {
+        tempCtx.clearRect(0, 0, 900, 550);
+        if(tool === "line") { tempCtx.beginPath(); tempCtx.moveTo(startX, startY); tempCtx.lineTo(x, y); tempCtx.stroke(); }
+        else if(tool === "rect") tempCtx.strokeRect(startX, startY, x - startX, y - startY);
+        else if(tool === "circle") { let r = Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2)); tempCtx.beginPath(); tempCtx.arc(startX, startY, r, 0, Math.PI * 2); tempCtx.stroke(); }
+        else if(tool === "poly" && polyPoints.length > 0) { tempCtx.beginPath(); tempCtx.moveTo(polyPoints[0].x, polyPoints[0].y); polyPoints.forEach(p => tempCtx.lineTo(p.x, p.y)); tempCtx.lineTo(x, y); tempCtx.stroke(); }
+    }
 };
 
-// THUẬT TOÁN ĐỔ MÀU CHUYÊN NGHIỆP
+tempCanvas.onmouseup = (e) => {
+    if(!isDrawing) return;
+    if(tool === "poly") {
+        polyPoints.push({x: e.offsetX, y: e.offsetY});
+        if(polyPoints.length > 2 && Math.sqrt(Math.pow(e.offsetX - polyPoints[0].x, 2) + Math.pow(e.offsetY - polyPoints[0].y, 2)) < 25) {
+            mainCtx.beginPath(); mainCtx.moveTo(polyPoints[0].x, polyPoints[0].y); polyPoints.forEach(p => mainCtx.lineTo(p.x, p.y)); mainCtx.closePath(); mainCtx.stroke();
+            polyPoints = []; tempCtx.clearRect(0,0,900,550); isDrawing = false; saveState();
+        }
+        return;
+    }
+    isDrawing = false;
+    if(!["brush", "eraser", "fill", "text", "picker", "spray"].includes(tool)) { mainCtx.drawImage(tempCanvas, 0, 0); tempCtx.clearRect(0, 0, 900, 550); }
+    saveState();
+};
+
+function showTextUI(x, y) {
+    textToolbar.style.display="flex"; textToolbar.style.left=x+"px"; textToolbar.style.top=(y-70)+"px";
+    document.getElementById("text-color-input").value = colorPicker.value;
+    textInput.style.display="block"; textInput.style.left=x+"px"; textInput.style.top=y+"px"; textInput.focus();
+}
+function finishText() {
+    if(textInput.value.trim()!=="") {
+        const size = document.getElementById("font-size-input").value;
+        mainCtx.font = size+"px "+document.getElementById('font-family').value;
+        mainCtx.fillStyle = document.getElementById("text-color-input").value;
+        mainCtx.fillText(textInput.value, parseInt(textInput.style.left), parseInt(textInput.style.top) + size/1.2);
+        saveState();
+    }
+    textInput.style.display="none"; textInput.value=""; textToolbar.style.display="none";
+}
 function floodFill(x, y, color) {
-    const target = ctx.getImageData(x, y, 1, 1).data;
-    const f = hexToRgb(color);
-    if(target[0] === f[0] && target[1] === f[1] && target[2] === f[2]) return;
-    const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const img = mainCtx.getImageData(0, 0, 900, 550);
+    const target = [img.data[(y*900+x)*4], img.data[(y*900+x)*4+1], img.data[(y*900+x)*4+2]];
+    const fill = [parseInt(color.slice(1,3),16), parseInt(color.slice(3,5),16), parseInt(color.slice(5,7),16)];
+    if(target[0]===fill[0] && target[1]===fill[1] && target[2]===fill[2]) return;
     const q = [[x, y]];
     while(q.length) {
-        const [cx, cy] = q.pop();
-        const i = (cy * canvas.width + cx) * 4;
-        if(cx >= 0 && cx < canvas.width && cy >= 0 && cy < canvas.height && img.data[i] === target[0] && img.data[i+1] === target[1] && img.data[i+2] === target[2]) {
-            img.data[i] = f[0]; img.data[i+1] = f[1]; img.data[i+2] = f[2]; img.data[i+3] = 255;
+        const [cx, cy] = q.pop(); const i = (cy*900+cx)*4;
+        if(cx>=0 && cx<900 && cy>=0 && cy<550 && img.data[i]===target[0] && img.data[i+1]===target[1] && img.data[i+2]===target[2]) {
+            img.data[i]=fill[0]; img.data[i+1]=fill[1]; img.data[i+2]=fill[2]; img.data[i+3]=255;
             q.push([cx+1, cy], [cx-1, cy], [cx, cy+1], [cx, cy-1]);
         }
     }
-    ctx.putImageData(img, 0, 0);
+    mainCtx.putImageData(img, 0, 0);
 }
-
-// HÀM HỖ TRỢ
-function hexToRgb(h) { return [parseInt(h.slice(1,3), 16), parseInt(h.slice(3,5), 16), parseInt(h.slice(5,7), 16)]; }
-function saveState() { undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); if(undoStack.length > 25) undoStack.shift(); }
-function undo() { if(undoStack.length > 1) { undoStack.pop(); ctx.putImageData(undoStack[undoStack.length-1], 0, 0); } }
-function clearCanvas() { if(confirm("Xóa sạch bảng vẽ?")) { ctx.fillStyle="white"; ctx.fillRect(0,0,900,550); saveState(); } }
-
-function saveToGallery(showAlert) {
-    let gallery = JSON.parse(localStorage.getItem("paintGallery") || "[]");
-    gallery.unshift({ id: Date.now(), user: localStorage.getItem("currentUser"), image: canvas.toDataURL("image/png", 0.6) });
-    localStorage.setItem("paintGallery", JSON.stringify(gallery.slice(0, 15)));
-    if(showAlert) alert("✅ Đã lưu tác phẩm!");
+function saveState() { undoStack.push(mainCtx.getImageData(0, 0, 900, 550)); if(undoStack.length > 40) undoStack.shift(); }
+function undo() { polyPoints=[]; tempCtx.clearRect(0,0,900,550); if(undoStack.length > 1) { undoStack.pop(); mainCtx.putImageData(undoStack[undoStack.length - 1], 0, 0); } }
+function clearCanvas() { if(confirm("Xóa sạch bảng vẽ?")) { mainCtx.globalAlpha=1; mainCtx.fillStyle="white"; mainCtx.fillRect(0,0,900,550); saveState(); } }
+function downloadImage() { const a = document.createElement("a"); a.download=`Minimix_${Date.now()}.png`; a.href=mainCanvas.toDataURL(); a.click(); }
+function saveToGalleryBtn() {
+    let g = JSON.parse(localStorage.getItem("paintGallery")||"[]");
+    g.unshift({id:Date.now(), user:localStorage.getItem("currentUser"), image:mainCanvas.toDataURL(), date:new Date().toLocaleString()});
+    localStorage.setItem("paintGallery", JSON.stringify(g.slice(0,15))); alert("Đã lưu!");
 }
-
-function handleExit() {
-    if(confirm("Bạn có muốn lưu tranh trước khi rời đi không?")) saveToGallery(false);
-    window.location.href = "index.html";
-}
-
-// PHÍM TẮT
-document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.key === 'z') undo();
-});
+function handleExit() { if(confirm("Lưu trước khi thoát?")) saveToGalleryBtn(); window.location.href="index.html"; }
+document.addEventListener('keydown', e => { if(e.ctrlKey && e.key === 'z') undo(); });
