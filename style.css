@@ -3,72 +3,244 @@
 :root {
     --primary: #7d2ae8;
     --primary-hover: #6610f2;
-    --success: #27ae60;
     --dark: #18191b;
-    --bg-gray: #f4f5f7;
-    --border: #e1e4e8;
+    --bg: #e9eaed;
+    --side-w: 260px;
+    --success: #27ae60;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-body { background: var(--bg-gray); color: #1e1e1e; min-height: 100vh; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-/* --- GIAO DIỆN CHUNG (Landing, Login, Register) --- */
-.full-page, .auth-page {
-    height: 100vh; width: 100%; display: flex; flex-direction: column;
-    justify-content: center; align-items: center; text-align: center;
-    background: radial-gradient(circle at top right, #f8f0ff, #ffffff);
+body { height: 100vh; display: flex; flex-direction: column; background: var(--bg); overflow: hidden; }
+
+/* --- Topbar --- */
+.topbar { 
+    height: 64px; background: white; border-bottom: 1px solid #ddd; 
+    display: flex; align-items: center; justify-content: space-between; 
+    padding: 0 20px; z-index: 100; 
+}
+.logo { color: var(--primary); font-weight: 800; font-size: 20px; cursor: pointer; text-decoration: none; }
+.logo b { color: #333; }
+
+.config-panel { display: flex; align-items: center; gap: 15px; background: #f1f2f6; padding: 6px 15px; border-radius: 40px; }
+.config-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
+
+input[type="color"] { border: none; width: 25px; height: 25px; cursor: pointer; background: none; }
+input[type="range"] { cursor: pointer; accent-color: var(--primary); width: 70px; }
+
+.btn-icon-top { 
+    width: 34px; height: 34px; border-radius: 10px; border: 1px solid #ddd; 
+    background: white; cursor: pointer; display: flex; align-items: center; 
+    justify-content: center; transition: 0.2s; 
+}
+.btn-icon-top:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+/* --- Floating Text Toolbar --- */
+.text-floating-bar { 
+    position: absolute; display: none; background: white; padding: 8px 15px; 
+    border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+    z-index: 2000; align-items: center; gap: 8px; border: 1px solid #ddd; 
+}
+.text-floating-bar select { padding: 5px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px; }
+
+/* --- Layout --- */
+.app-body { display: flex; flex: 1; height: calc(100vh - 64px); }
+
+.sidebar { 
+    width: var(--side-w); background: var(--dark); color: white; 
+    display: flex; flex-direction: column; padding: 15px; overflow-y: auto; 
+}
+
+.tool-section h4 { font-size: 10px; color: #666; text-transform: uppercase; margin: 15px 0 8px; letter-spacing: 1px; }
+
+.tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.tool-btn { 
+    background: #2c2c2e; border: none; color: #a9abb0; padding: 10px 5px; 
+    border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; 
+    align-items: center; gap: 5px; font-size: 10px; transition: 0.2s; 
+}
+.tool-btn i { font-size: 18px; }
+.tool-btn.active { color: white; background: var(--primary); }
+.tool-btn:hover:not(.active) { background: #3a3a3c; }
+
+/* --- Recent Colors --- */
+.recent-colors { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+.color-swatch { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 1px solid #444; }
+
+/* --- Workspace --- */
+.workspace { flex: 1; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 40px; position: relative; }
+
+.canvas-holder { position: relative; background: white; box-shadow: 0 20px 60px rgba(0,0,0,0.15); border-radius: 4px; line-height: 0; }
+
+#mainCanvas { position: absolute; top: 0; left: 0; z-index: 1; }
+#tempCanvas { position: relative; z-index: 2; cursor: crosshair; }
+#gridCanvas { position: absolute; top:0; left:0; z-index: 3; pointer-events: none; opacity: 0.3; display: none; }
+
+#textInput { 
+    position: absolute; display: none; z-index: 1000; 
+    border: 1px dashed var(--primary); background: transparent; 
+    outline: none; padding: 5px; font-size: 20px;
+}
+
+/* --- Buttons --- */
+.btn-main { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; transition: 0.2s; }
+.btn-main:hover { background: var(--primary-hover); }
+
+.btn-filter { background: #444; color: white; font-size: 11px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; transition: 0.2s; margin-bottom: 5px; width: 100%; }
+.btn-filter:hover { background: #555; }
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+:root {
+    --primary: #7d2ae8;
+    --primary-hover: #6610f2;
+    --dark: #18191b;
+    --bg: #f8f9fd;
+    --text: #1e1e1e;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+body { background: var(--bg); color: var(--text); }
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+:root {
+    --primary: #7d2ae8;
+    --primary-hover: #6610f2;
+    --dark: #18191b;
+    --bg: #f8f9fd;
+    --text: #1e1e1e;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+body { background: var(--bg); color: var(--text); }
+
+/* --- GIAO DIỆN TRANG CHỦ (INDEX) --- */
+.hero-page {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(circle at top right, #f3e8ff, transparent), 
+                radial-gradient(circle at bottom left, #fff1f2, transparent);
+    background-color: white;
+}
+
+.hero-title {
+    font-size: clamp(40px, 8vw, 72px);
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1.1;
+    margin-bottom: 30px;
+    color: var(--dark);
+}
+
+.hero-title span { color: var(--primary); }
+
+/* --- GIAO DIỆN ĐĂNG NHẬP / ĐĂNG KÝ (AUTH) --- */
+.auth-page {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #7d2ae8 0%, #6610f2 100%);
 }
 
 .auth-card {
-    background: white; padding: 40px; border-radius: 30px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1); width: 100%; max-width: 420px;
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
 }
 
-.input-group { text-align: left; margin-bottom: 20px; width: 100%; }
-.input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #444; }
-
-input[type="text"], input[type="password"], .auth-card input {
-    width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #eee; outline: none; transition: 0.3s;
+.auth-card h2 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: var(--dark);
 }
 
-/* --- NÚT BẤM PRO --- */
+.auth-card p { color: #666; margin-bottom: 25px; font-size: 14px; }
+
+.input-group { text-align: left; margin-bottom: 20px; }
+.input-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--dark);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    border-color: var(--primary);
+    background: #fdfaff;
+}
+
+/* --- NÚT BẤM CHUNG (BUTTONS) --- */
 .btn-pro {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 12px 24px; border-radius: 12px; border: none; font-weight: 700;
-    cursor: pointer; transition: 0.3s; font-size: 14px; text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+    border: none;
+    gap: 10px;
 }
-.btn-primary { background: var(--primary); color: white; box-shadow: 0 8px 20px rgba(125, 42, 232, 0.2); }
-.btn-primary:hover { transform: translateY(-2px); background: var(--primary-hover); }
-.btn-outline { background: white; border: 1px solid #ddd; color: #333; }
 
-/* --- STUDIO PAINT LAYOUT --- */
-.topbar {
-    height: 64px; background: white; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100;
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    width: 100%; /* Dùng cho auth card */
 }
 
-.config-panel { display: flex; align-items: center; gap: 15px; background: #f1f2f6; padding: 8px 20px; border-radius: 40px; }
-.app-body { display: flex; height: calc(100vh - 64px); }
-.sidebar { width: 260px; background: var(--dark); color: white; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; }
-
-.tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.tool-btn {
-    background: #2c2c2e; border: none; color: #a9abb0; padding: 12px;
-    border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 10px;
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(125,42,232,0.2);
 }
-.tool-btn.active { color: white; background: var(--primary); }
 
-.workspace { flex: 1; display: flex; align-items: center; justify-content: center; background: #e9eaed; position: relative; overflow: auto; }
-.canvas-holder { position: relative; background: white; box-shadow: 0 20px 60px rgba(0,0,0,0.2); line-height: 0; }
-#mainCanvas { position: absolute; top: 0; left: 0; z-index: 1; }
-#tempCanvas { position: relative; z-index: 2; cursor: crosshair; }
-
-/* --- THANH CHỮ NỔI (TEXT TOOLBAR) --- */
-.text-floating-bar {
-    position: absolute; display: none; background: white; padding: 10px 15px;
-    border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 2000;
-    align-items: center; gap: 12px; border: 1px solid #ddd;
+.btn-outline {
+    background: white;
+    color: var(--dark);
+    border: 2px solid #eee;
 }
-.text-floating-bar input[type="number"] { width: 60px; padding: 6px; border-radius: 6px; border: 1px solid #ddd; }
-.text-floating-bar input[type="color"] { border: none; width: 30px; height: 30px; cursor: pointer; background: none; }
-#textInput { position: absolute; display: none; z-index: 1000; border: 1px dashed var(--primary); background: transparent; outline: none; padding: 5px; }
+
+.btn-outline:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.auth-link {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+.auth-link a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 700;
+}

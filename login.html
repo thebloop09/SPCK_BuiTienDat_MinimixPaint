@@ -1,14 +1,32 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8"><title>Đăng nhập | MinimixPaint</title><link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Đăng nhập | MinimixPaint</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="auth-page"><div class="auth-card">
-    <div style="font-size: 50px; margin-bottom: 10px;">🎨</div>
-    <h2>Chào mừng trở lại</h2>
-    <div class="input-group"><label>Tên đăng nhập</label><input type="text" id="u"></div>
-    <div class="input-group"><label>Mật khẩu</label><input type="password" id="p"></div>
-    <button class="btn-pro btn-primary" style="width:100%" onclick="Auth.login(document.getElementById('u').value, document.getElementById('p').value)">Đăng nhập</button>
-    <p style="margin-top:20px">Chưa có tài khoản? <a href="register.html" style="color:var(--primary)">Đăng ký ngay</a></p>
-</div><script src="app.js"></script></body>
+<body class="auth-page">
+    <div class="auth-card">
+        <div style="font-size: 40px; margin-bottom: 15px;">👋</div>
+        <h2>Mừng trở lại!</h2>
+        <p>Đăng nhập để tiếp tục sáng tạo</p>
+        
+        <div class="input-group">
+            <label>Tên đăng nhập</label>
+            <input type="text" id="u" placeholder="Tên tài khoản của bạn">
+        </div>
+        
+        <div class="input-group">
+            <label>Mật khẩu</label>
+            <input type="password" id="p" placeholder="••••••••">
+        </div>
+        
+        <button class="btn-pro btn-primary" onclick="Auth.login(document.getElementById('u').value, document.getElementById('p').value)">Đăng nhập</button>
+        
+        <div class="auth-link">
+            Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
 </html>

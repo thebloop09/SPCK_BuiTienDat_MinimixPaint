@@ -1,57 +1,107 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8"><title>Studio Vẽ - MinimixPaint</title><link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimix Paint | Workspace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body style="overflow:hidden; display:flex; flex-direction:column; height:100vh;">
+<body>
+
     <header class="topbar">
-        <div class="logo" onclick="location.href='index.html'">🎨 Minimix<b>Studio</b></div>
+        <a href="index.html" class="logo">🎨 Minimix<b>Paint</b></a>
+        
         <div class="config-panel">
-            <input type="color" id="colorPicker"><input type="range" id="sizeSlider" min="1" max="100" value="5"> <span id="sizeVal" style="color:#666">5</span>
-            <input type="range" id="opacitySlider" min="1" max="100" value="100">
-            <button class="btn-pro btn-outline" style="padding:8px" onclick="undo()"><i class="fas fa-rotate-left"></i></button>
+            <div class="config-item"><input type="color" id="colorPicker" value="#000000"></div>
+            <div class="config-item">
+                <i class="fas fa-pen-nib"></i>
+                <input type="range" id="sizeSlider" min="1" max="100" value="5">
+                <span id="sizeVal">5</span>
+            </div>
+            <div class="config-item">
+                <i class="fas fa-droplet"></i>
+                <input type="range" id="opacitySlider" min="1" max="100" value="100">
+            </div>
+            <button class="btn-icon-top" onclick="undo()" title="Hoàn tác (Ctrl+Z)"><i class="fas fa-rotate-left"></i></button>
+            <button class="btn-icon-top" onclick="toggleGrid()" title="Bật/Tắt Lưới"><i class="fas fa-table-cells"></i></button>
         </div>
+
         <div style="display:flex; gap:10px;">
-            <button class="btn-pro btn-primary" style="background:var(--success)" onclick="downloadImage()">Tải về</button>
-            <button class="btn-pro btn-primary" onclick="saveToGalleryBtn()">Lưu</button>
-            <button class="btn-pro btn-outline" style="color:red" onclick="handleExit()">Thoát</button>
+            <button class="btn-main" style="background:#27ae60" onclick="downloadImage()" title="Tải về máy"><i class="fas fa-download"></i></button>
+            <button class="btn-main" onclick="saveToGalleryBtn()">Lưu Gallery</button>
+            <button onclick="handleExit()" style="background:none; border:none; color:#ff4757; cursor:pointer; font-weight:700; padding: 0 10px;">Thoát</button>
         </div>
     </header>
 
+    <!-- Toolbar cho chữ -->
     <div id="text-toolbar" class="text-floating-bar">
-        <select id="font-family"><option value="Arial">Arial</option><option value="Inter" selected>Inter</option></select>
-        <input type="number" id="font-size-input" value="26">
-        <input type="color" id="text-color-input">
-        <button class="btn-pro btn-primary" style="padding:6px 12px" onclick="finishText()">Xong</button>
+        <select id="font-family">
+            <option value="Arial">Arial</option>
+            <option value="Inter" selected>Inter</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Times New Roman">Times New Roman</option>
+        </select>
+        <select id="font-size">
+            <option value="20">20px</option>
+            <option value="32">32px</option>
+            <option value="48" selected>48px</option>
+            <option value="72">72px</option>
+            <option value="100">100px</option>
+        </select>
+        <button class="btn-main" style="padding:5px 10px" onclick="finishText()">Xong</button>
     </div>
 
     <div class="app-body">
         <aside class="sidebar">
-            <div class="tool-grid">
-                <button class="tool-btn active" data-tool="brush"><i class="fas fa-paint-brush"></i>Cọ vẽ</button>
-                <button class="tool-btn" data-tool="spray"><i class="fas fa-spray-can"></i>Phun sơn</button>
-                <button class="tool-btn" data-tool="eraser"><i class="fas fa-eraser"></i>Tẩy</button>
-                <button class="tool-btn" data-tool="fill"><i class="fas fa-fill-drip"></i>Đổ màu</button>
-                <button class="tool-btn" data-tool="text" style="grid-column: span 2"><i class="fas fa-font"></i>Chèn chữ Pro</button>
+            <div class="tool-section">
+                <h4>Công cụ vẽ</h4>
+                <div class="tool-grid">
+                    <button class="tool-btn active" data-tool="brush"><i class="fas fa-paint-brush"></i>Cọ vẽ</button>
+                    <button class="tool-btn" data-tool="spray"><i class="fas fa-spray-can"></i>Phun sơn</button>
+                    <button class="tool-btn" data-tool="eraser"><i class="fas fa-eraser"></i>Tẩy</button>
+                    <button class="tool-btn" data-tool="fill"><i class="fas fa-fill-drip"></i>Đổ màu</button>
+                    <button class="tool-btn" data-tool="picker"><i class="fas fa-eye-dropper"></i>Hút màu</button>
+                    <button class="tool-btn" data-tool="text"><i class="fas fa-font"></i>Chữ</button>
+                </div>
+                <div class="recent-colors" id="recentColors"></div>
             </div>
-            <h4>Hình khối</h4>
-            <div class="tool-grid">
-                <button class="tool-btn" data-tool="line"><i class="fas fa-slash"></i>Đường thẳng</button>
-                <button class="tool-btn" data-tool="rect"><i class="far fa-square"></i>Chữ nhật</button>
-                <button class="tool-btn" data-tool="circle"><i class="far fa-circle"></i>Hình tròn</button>
-                <button class="tool-btn" data-tool="poly"><i class="fas fa-draw-polygon"></i>Đa giác</button>
+
+            <div class="tool-section">
+                <h4>Hình khối</h4>
+                <div class="tool-grid">
+                    <button class="tool-btn" data-tool="line"><i class="fas fa-slash"></i>Đường kẻ</button>
+                    <button class="tool-btn" data-tool="rect"><i class="far fa-square"></i>Chữ nhật</button>
+                    <button class="tool-btn" data-tool="circle"><i class="far fa-circle"></i>Hình tròn</button>
+                    <button class="tool-btn" data-tool="poly"><i class="fas fa-draw-polygon"></i>Đa giác</button>
+                </div>
             </div>
-            <button class="btn-pro" onclick="clearCanvas()" style="background:#333; color:red; margin-top:auto">XÓA SẠCH</button>
+
+            <div class="tool-section">
+                <h4>Bộ lọc ảnh</h4>
+                <button class="btn-filter" onclick="applyFilter('gray')">Trắng đen</button>
+                <button class="btn-filter" onclick="applyFilter('invert')">Đảo ngược màu</button>
+                <button class="btn-filter" onclick="applyFilter('sepia')">Hoài cổ (Sepia)</button>
+            </div>
+
+            <button class="btn-main" onclick="clearCanvas()" style="background:#333; color:#ff4757; margin-top:auto;">
+                <i class="fas fa-trash-alt"></i> XÓA SẠCH BẢNG
+            </button>
         </aside>
-        <main class="workspace"><div class="canvas-holder"><canvas id="mainCanvas"></canvas><canvas id="tempCanvas"></canvas><input type="text" id="textInput"></div></main>
+
+        <main class="workspace">
+            <div class="canvas-holder">
+                <canvas id="mainCanvas"></canvas>
+                <canvas id="tempCanvas"></canvas>
+                <canvas id="gridCanvas"></canvas>
+                <input type="text" id="textInput" placeholder="Nhập chữ tại đây...">
+            </div>
+        </main>
     </div>
+
     <script src="paint.js"></script>
 </body>
 </html>
-
-<!-- ID ai:   j6y14b6udjkoo307ujfjtntskbr066r7 -->
-
 
 <script>
 (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="bQYukVmArP7OR1nlEaLM0";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
